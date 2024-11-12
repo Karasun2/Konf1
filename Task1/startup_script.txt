@@ -1,0 +1,7 @@
+ls
+cd home/user/documents
+head file1.txt
+find file2.txt
+cd ../
+ls
+find bin
