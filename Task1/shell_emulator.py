@@ -69,7 +69,7 @@ class ShellEmulator:
             files1 = []
             for f in files:
                 if (f != self.current_path):
-                    files1.append(f[len(self.current_path):])
+                    files1.append(f[len(self.current_path) + 1:])
             files.clear()
             for f in files1:
                 if(f.find("/") == -1):
@@ -84,7 +84,7 @@ class ShellEmulator:
             elif self.current_path + "/" + path in self.filesystem:
                 self.current_path += "/" + path
             elif path == "../":
-                self.current_path = self.current_path[:len(self.current_path) - self.current_path.rfind("/")]
+                self.current_path = self.current_path[:len(self.current_path) - 1 - self.current_path.rfind('/')]
             else:
                 self.text_area.insert(tk.END, "No such directory\n")
         else:
@@ -133,3 +133,4 @@ if __name__ == "__main__":
     startup_script = sys.argv[3]
     emulator = ShellEmulator(hostname, tar_path, startup_script)
     emulator.run()
+
