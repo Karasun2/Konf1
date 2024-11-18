@@ -7,6 +7,7 @@ from tkinter import messagebox
 class ShellEmulator:
     def __init__(self, hostname, tar_path, startup_script):
         self.hostname = hostname
+        self.tar_path = tar_path
         self.current_path = '/'
         self.filesystem = {}
         self.load_filesystem(tar_path)
@@ -64,6 +65,9 @@ class ShellEmulator:
             for f in files1:
                 if(f.find("/") == -1):
                     files.append(f)
+                    continue
+                if (not(f[:f.find("/")] in files)):
+                    files.append(f[:f.find("/")])
         else:
             files = [name for name in self.filesystem if name.startswith(self.current_path)]
             files1 = []
@@ -86,7 +90,13 @@ class ShellEmulator:
             elif path == "../":
                 self.current_path = self.current_path[:len(self.current_path) - 1 - self.current_path.rfind('/')]
             else:
-                self.text_area.insert(tk.END, "No such directory\n")
+                flag = False
+                for f in self.filesystem:
+                    if path == f[:f.find("/")]:
+                        self.current_path = path
+                        flag = True
+                if flag == False:
+                    self.text_area.insert(tk.END, "No such directory\n")
         else:
             self.current_path = '/'
             
@@ -94,13 +104,13 @@ class ShellEmulator:
         _, file_name = command.split()
         if file_name in self.filesystem:
             member = self.filesystem[file_name]
-            with tarfile.open(tar_path, 'r') as tar:
+            with tarfile.open(self.tar_path, 'r') as tar:
                 f = tar.extractfile(member)
                 lines = f.readlines()[:10]
                 self.text_area.insert(tk.END, ''.join([line.decode() for line in lines]))
         elif self.current_path + "/" + file_name in self.filesystem:
             member = self.filesystem[self.current_path + "/" + file_name]
-            with tarfile.open(tar_path, 'r') as tar:
+            with tarfile.open(self.tar_path, 'r') as tar:
                 f = tar.extractfile(member)
                 lines = f.readlines()[:10]
                 self.text_area.insert(tk.END, ''.join([line.decode() for line in lines]))
@@ -133,4 +143,3 @@ if __name__ == "__main__":
     startup_script = sys.argv[3]
     emulator = ShellEmulator(hostname, tar_path, startup_script)
     emulator.run()
-
