@@ -88,7 +88,10 @@ class ShellEmulator:
             elif self.current_path + "/" + path in self.filesystem:
                 self.current_path += "/" + path
             elif path == "../":
-                self.current_path = self.current_path[:len(self.current_path) - 1 - self.current_path.rfind('/')]
+                if (self.current_path.find("/") == -1):
+                    self.current_path = '/'
+                else:
+                    self.current_path = self.current_path[:len(self.current_path) - 1 - self.current_path.rfind('/')]
             else:
                 flag = False
                 for f in self.filesystem:
